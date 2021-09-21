@@ -3,9 +3,9 @@
 ## Table of Contents
 
 -   [Instructions](#instructions)
--   [Development]
--   [License]
--   [Footer]
+-   [Development](#Development)
+-   [License](#License)
+-   [Footer](#Footer)
 
 ## Instructions
 
