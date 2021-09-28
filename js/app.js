@@ -62,17 +62,37 @@ let mediaQuery = window.matchMedia('(min-width: 35em)');
 // build the nav
 
 function createLitems() {
-	for (section of sectionsArray) {
+	sectionsArray.forEach((section) => {
 		sectionLocation = section.getAttribute('id');
 		sectionName = section.getAttribute('data-nav');
 		lItem = document.createElement('li');
-		lItem.innerHTML = `<a class='menu__link'  href='#${sectionLocation}'>${sectionName}</a>'`;
-		lItem.setAttribute('class', `${sectionLocation}`);
+		lItem.innerHTML = `<a class='menu__link' link-location='${sectionLocation}'>${sectionName}</a>'`;
+		lItem.style.cursor = 'pointer';
+		// add attribte to use it in scrolling nav bar
+		lItem.setAttribute('list-location', sectionLocation);
 		unorderList.appendChild(lItem);
-	}
+	});
 }
-
 createLitems();
+
+// define variables contains li and a
+
+const navList = document.querySelectorAll('li');
+const menuLinks = document.querySelectorAll('.menu__link');
+
+// using scrollIntoView to scroll to target section when click using scrollIntoView
+
+menuLinks.forEach((link) => {
+	link.addEventListener('click', () => {
+		const element = document.getElementById(
+			link.getAttribute('link-location')
+		);
+		element.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+		});
+	});
+});
 
 // Add class 'active' to section when near top of viewport
 
@@ -80,25 +100,41 @@ createLitems();
 
 function sectionIsInViewport(element) {
 	let sectionPosition = element.getBoundingClientRect();
-	return sectionPosition.top >= -10;
+	return sectionPosition.top <= 50 && sectionPosition.bottom >= 100;
 }
 
 // toggle active class
 
-function toggleActiveClass() {
-	for (section of sectionsArray) {
+document.addEventListener('scroll', () => {
+	sectionsArray.forEach((section) => {
+		section.classList.remove('your-active-class');
 		if (sectionIsInViewport(section)) {
+			section.classList.add('your-active-class');
+		} else {
 			section.classList.remove('your-active-class');
-			if (!section.classList.contains('your-active-class')) {
-				section.classList.add('your-active-class');
-			}
+		}
+	});
+	// check if active section on viewofport and link it with related navbar li
+	let current = '';
+	sectionsArray.forEach((section) => {
+		const sectionTop = section.offsetTop;
+		const sectionHeight = section.clientHeight;
+		if (window.pageYOffset >= sectionTop - sectionHeight / 3) {
+			current = section.getAttribute('id');
+		}
+	});
+	for (i = 0; i < navList.length; i++) {
+		const currentList = document.getElementsByTagName('li')[i];
+
+		currentList.classList.remove('active');
+
+		if (currentList.getAttribute('list-location') == current) {
+			currentList.classList.add('active');
+		} else {
+			currentList.classList.remove('active');
 		}
 	}
-}
-
-// Scroll to anchor ID using scrollTO event
-
-document.addEventListener('scroll', toggleActiveClass);
+});
 
 /**
  * End Main Functions
@@ -108,25 +144,6 @@ document.addEventListener('scroll', toggleActiveClass);
 
 // Build menu
 
-const navList = document.querySelectorAll('li');
-window.addEventListener('scroll', () => {
-	var current = '';
-
-	// Scroll to section on link click
-	sectionsArray.forEach((section) => {
-		const sectionTop = section.offsetTop;
-		if (pageYOffset >= sectionTop - 10) {
-			current = section.getAttribute('id');
-		}
-	});
-	navList.forEach((li) => {
-		// Set sections as active
-		li.classList.remove('active');
-		if (li.classList.contains(current)) {
-			li.classList.add('active');
-		}
-	});
-});
 // add Go to top button
 
 let goToTopBtn = document.createElement('div');
